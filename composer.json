@@ -1,0 +1,29 @@
+{
+  "name": "rhubarbphp/module-leaf-search-panel",
+  "description": "A container for presenting a search interface that can populate collection filters.",
+  "keywords": [
+    "mvp",
+    "presenter",
+    "leaf",
+    "rhubarb",
+    "php",
+    "framework"
+  ],
+  "homepage": "http://www.rhubarbphp.com/",
+  "license": "Apache-2.0",
+  "autoload": {
+    "psr-4": {
+      "Rhubarb\\Leaf\\SearchPanel\\": "src/"
+    }
+  },
+	"extra": {
+		"branch-alias": {
+			"dev-master": "1.0.0-dev"
+		}
+	},  
+  "require": {
+    "rhubarbphp/module-leaf": "^1.0.0",
+    "rhubarbphp/module-stem": "^1.0.0",
+    "rhubarbphp/module-leaf-common-controls": "^1.0.0"
+  }
+}
