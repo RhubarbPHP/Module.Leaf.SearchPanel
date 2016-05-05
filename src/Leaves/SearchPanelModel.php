@@ -1,6 +1,6 @@
 <?php
 
-namespace Rhubarb\Leaf\Presenters\Application\Search;
+namespace Rhubarb\Leaf\SearchPanel\Leaves;
 
 use Rhubarb\Crown\Events\Event;
 use Rhubarb\Leaf\Leaves\LeafModel;
@@ -24,7 +24,7 @@ class SearchPanelModel extends LeafModel
      *
      * @var string[]
      */
-    public $searchValues = [];
+    public $searchValues;
 
     /**
      * The number of columns to use in the panel.
@@ -45,6 +45,16 @@ class SearchPanelModel extends LeafModel
         parent::__construct();
 
         $this->searchedEvent = new Event();
+        $this->searchValues = new \stdClass();
+    }
+
+    public function getSearchValue($name, $defaultValue = false)
+    {
+        if (isset($this->searchValues->$name)){
+            return $this->searchValues->$name;
+        }
+
+        return $defaultValue;
     }
 
     /**

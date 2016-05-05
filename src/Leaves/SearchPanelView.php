@@ -16,7 +16,7 @@
  *  limitations under the License.
  */
 
-namespace Rhubarb\Leaf\Presenters\Application\Search;
+namespace Rhubarb\Leaf\SearchPanel\Leaves;
 
 use Rhubarb\Leaf\Controls\Common\Buttons\Button;
 use Rhubarb\Leaf\Leaves\LeafDeploymentPackage;
@@ -44,13 +44,13 @@ class SearchPanelView extends View
         $this->searchControlsColumnCount = $columns;
     }
 
-    public function createSubLeaves()
+    protected function createSubLeaves()
     {
         parent::createSubLeaves();
 
         $controls = $this->model->searchControls;
 
-        $this->registerSubLeaf($controls);
+        $this->registerSubLeaf(...$controls);
 
         $searchButton = new Button("Search", "Search", function () {
             $this->model->searchedEvent->raise();

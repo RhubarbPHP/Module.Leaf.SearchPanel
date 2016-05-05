@@ -16,7 +16,7 @@
  *  limitations under the License.
  */
 
-namespace Rhubarb\Leaf\Presenters\Application\Search;
+namespace Rhubarb\Leaf\SearchPanel\Leaves;
 
 use Rhubarb\Crown\Events\Event;
 use Rhubarb\Leaf\Leaves\Leaf;
@@ -51,7 +51,7 @@ class SearchPanel extends Leaf
 
     protected final function snapshotDefaultControlValues()
     {
-        $controls = $this->getSearchControls();
+        $controls = $this->model->searchControls;
         $defaultValues = $this->getDefaultControlValues();
 
         foreach ($controls as $control) {
@@ -72,8 +72,6 @@ class SearchPanel extends Leaf
         return [];
     }
 
-    private $searchControls = null;
-
     /**
      * You should implement this to return an ordered collection of control presenters to use in the search.
      *
@@ -86,16 +84,7 @@ class SearchPanel extends Leaf
 
     protected function setSearchControlsColumnCount($columns = 6)
     {
-        $this->searchControlsColumnCount = $columns;
-    }
-
-    protected final function getSearchControls()
-    {
-        if ($this->searchControls === null) {
-            $this->searchControls = $this->createSearchControls();
-        }
-
-        return $this->searchControls;
+        $this->model->searchControlsColumnCount = $columns;
     }
 
     /**
@@ -108,7 +97,7 @@ class SearchPanel extends Leaf
         $data = $this->model->searchValues;
         $controlData = [];
 
-        foreach ($this->getSearchControls() as $control) {
+        foreach ($this->model->searchControls as $control) {
             $controlName = $control->getName();
 
             if (isset($data[$controlName])) {
@@ -128,15 +117,15 @@ class SearchPanel extends Leaf
     {
         $controlValues = array_merge($this->defaultControlValues, $controlValues);
 
-        foreach ($this->getSearchControls() as $control) {
+        foreach ($this->model->searchControls as $control) {
             $controlName = $control->getName();
 
             if (isset($controlValues[$controlName])) {
-                $this->model->searchValues[$controlName] = $controlValues[$controlName];
+                $this->model->searchValues->$controlName = $controlValues[$controlName];
             }
         }
 
-        $this->rePresent();
+        $this->reRender();
 
         $this->searchedEvent->raise();
     }
@@ -202,7 +191,8 @@ class SearchPanel extends Leaf
         $model = new SearchPanelModel();
 
         // Pass through of searchedEvent
-        $this->searchedEvent = $this->model->searchedEvent;
+        $model->searchControls = $this->createSearchControls();
+        $this->searchedEvent = $model->searchedEvent;
 
         return $model;
     }
