@@ -1,4 +1,4 @@
-var bridge = function (presenterPath) {
+var bridge = function (leafPath) {
     window.rhubarb.viewBridgeClasses.ViewBridge.apply(this, arguments);
 
     this.searchTimer = null;
@@ -11,7 +11,7 @@ bridge.prototype.onRegistered = function() {
     window.rhubarb.viewBridgeClasses.ViewBridge.prototype.onRegistered.apply(this,arguments);
 
     if ( this.model.AutoSubmit ){
-        var subPresenters = this.getSubPresenters();
+        var subPresenters = this.getSubLeaves();
         var self = this;
 
         for( var i in subPresenters ){
@@ -54,7 +54,7 @@ bridge.prototype.startSearch = function(){
     }, 300);
 };
 
-bridge.prototype.onSubPresenterValueChanged = function () {
+bridge.prototype.onSubLeafValueChanged = function () {
     if (this.model.AutoSubmit) {
         this.startSearch();
     }
