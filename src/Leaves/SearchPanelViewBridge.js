@@ -10,7 +10,7 @@ bridge.prototype.constructor = bridge;
 bridge.prototype.onRegistered = function() {
     window.rhubarb.viewBridgeClasses.ViewBridge.prototype.onRegistered.apply(this,arguments);
 
-    if ( this.model.AutoSubmit ){
+    if ( this.model.autoSubmit ){
         var subPresenters = this.getSubLeaves();
         var self = this;
 
@@ -55,7 +55,7 @@ bridge.prototype.startSearch = function(){
 };
 
 bridge.prototype.onSubLeafValueChanged = function () {
-    if (this.model.AutoSubmit) {
+    if (this.model.autoSubmit) {
         this.startSearch();
     }
 };
