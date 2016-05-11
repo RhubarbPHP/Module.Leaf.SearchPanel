@@ -81,29 +81,29 @@ class SearchPanelView extends View
         print '</tr></table></div>';
     }
 
-    protected function getBindingValue($propertyName, $index = null)
+    protected function getBindingValueForSubLeaf($propertyName, $index = null)
     {
         if ($index !== null ){
-            if (isset($this->model->searchValues->$propertyName[$index])){
-                return $this->model->searchValues->$propertyName[$index];
+            if (isset($this->model->searchValues[$propertyName][$index])){
+                return $this->model->searchValues[$propertyName][$index];
             } else {
                 return null;
             }
         } else {
-            return isset($this->model->searchValues->$propertyName) ? $this->model->searchValues->$propertyName : null;
+            return isset($this->model->searchValues[$propertyName]) ? $this->model->searchValues[$propertyName] : null;
         }
     }
 
-    protected function setBindingValue($propertyName, $propertyValue, $index = null)
+    protected function setBindingValueFromSubLeaf($propertyName, $propertyValue, $index = null)
     {
         if ($index !== null){
-            if (!isset($this->model->searchValues->$propertyName) || !is_array($this->model->searchValues->$propertyName)){
-                $this->model->searchValues->$propertyName = [];
+            if (!isset($this->model->searchValues[$propertyName]) || !is_array($this->model->searchValues[$propertyName])){
+                $this->model->searchValues[$propertyName] = [];
             }
 
-            $this->model->searchValues->$propertyName[$index] = $propertyValue;
+            $this->model->searchValues[$propertyName][$index] = $propertyValue;
         } else {
-            $this->model->searchValues->$propertyName = $propertyValue;
+            $this->model->searchValues[$propertyName] = $propertyValue;
         }
     }
 }
