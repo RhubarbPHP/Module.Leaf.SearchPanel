@@ -29,7 +29,7 @@ class SearchPanelView extends View
      */
     protected $model;
 
-    protected function getClientSideViewBridgeName()
+    protected function getViewBridgeName()
     {
         return "SearchPanelViewBridge";
     }
