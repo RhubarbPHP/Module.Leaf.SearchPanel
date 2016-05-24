@@ -80,30 +80,4 @@ class SearchPanelView extends View
 
         print '</tr></table></div>';
     }
-
-    protected function getBindingValueForSubLeaf($propertyName, $index = null)
-    {
-        if ($index !== null ){
-            if (isset($this->model->searchValues[$propertyName][$index])){
-                return $this->model->searchValues[$propertyName][$index];
-            } else {
-                return null;
-            }
-        } else {
-            return isset($this->model->searchValues[$propertyName]) ? $this->model->searchValues[$propertyName] : null;
-        }
-    }
-
-    protected function setBindingValueFromSubLeaf($propertyName, $propertyValue, $index = null)
-    {
-        if ($index !== null){
-            if (!isset($this->model->searchValues[$propertyName]) || !is_array($this->model->searchValues[$propertyName])){
-                $this->model->searchValues[$propertyName] = [];
-            }
-
-            $this->model->searchValues[$propertyName][$index] = $propertyValue;
-        } else {
-            $this->model->searchValues[$propertyName] = $propertyValue;
-        }
-    }
 }

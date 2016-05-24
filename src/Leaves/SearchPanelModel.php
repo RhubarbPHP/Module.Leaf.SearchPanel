@@ -68,4 +68,31 @@ class SearchPanelModel extends LeafModel
 
         return $list;
     }
+
+
+    public function getBoundValue($propertyName, $index = null)
+    {
+        if ($index !== null ){
+            if (isset($this->searchValues[$propertyName][$index])){
+                return $this->searchValues[$propertyName][$index];
+            } else {
+                return null;
+            }
+        } else {
+            return isset($this->searchValues[$propertyName]) ? $this->searchValues[$propertyName] : null;
+        }
+    }
+
+    public function setBoundValue($propertyName, $propertyValue, $index = null)
+    {
+        if ($index !== null){
+            if (!isset($this->searchValues[$propertyName]) || !is_array($this->searchValues[$propertyName])){
+                $this->searchValues[$propertyName] = [];
+            }
+
+            $this->searchValues[$propertyName][$index] = $propertyValue;
+        } else {
+            $this->searchValues[$propertyName] = $propertyValue;
+        }
+    }
 }
