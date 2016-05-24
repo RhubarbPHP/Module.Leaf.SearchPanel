@@ -48,7 +48,7 @@ bridge.prototype.startSearch = function(){
 
     this.searchTimer = setTimeout( function(){
         self.onSearchStarted();
-        self.raiseServerEvent("searchedEvent",function(){
+        self.raiseServerEvent("searched",function(){
             self.onSearchFinished();
         });
     }, 300);
