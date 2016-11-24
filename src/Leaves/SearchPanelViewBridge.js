@@ -7,20 +7,34 @@ var bridge = function (leafPath) {
 bridge.prototype = new window.rhubarb.viewBridgeClasses.ViewBridge();
 bridge.prototype.constructor = bridge;
 
-bridge.prototype.onRegistered = function() {
-    window.rhubarb.viewBridgeClasses.ViewBridge.prototype.onRegistered.apply(this,arguments);
+bridge.prototype.onRegistered = function () {
+    window.rhubarb.viewBridgeClasses.ViewBridge.prototype.onRegistered.apply(this, arguments);
 
-    if ( this.model.autoSubmit ){
+    if (this.model.autoSubmit) {
         var subPresenters = this.getSubLeaves();
-        var self = this;
 
-        for( var i in subPresenters ){
-            var subPresenter = subPresenters[i];
-
-            // If the sub presenter is emitting key press events we need to know.
-            subPresenter.onKeyPress = function(event){
-                self.startSearch();
+        for (var i in subPresenters) {
+            if (subPresenters.hasOwnProperty(i)) {
+                // If the sub presenter is emitting key press events we need to know.
+                subPresenters[i].onKeyPress = function () {
+                    this.startAutoSubmitTimer();
+                }.bind(this);
             }
+        }
+    }
+
+    if (this.model.searchButtonLeafName) {
+        var button = this.findChildViewBridge(this.model.searchButtonLeafName);
+        if (button) {
+            button.attachClientEventHandler('OnButtonPressed', function () {
+                this.onSearchStarted.apply(this, arguments);
+            }.bind(this));
+            button.attachClientEventHandler('ButtonPressCompleted', function () {
+                this.onSearchFinished.apply(this, arguments);
+            }.bind(this));
+            button.attachClientEventHandler('ButtonPressFailed', function () {
+                this.onSearchFailed.apply(this, arguments);
+            }.bind(this));
         }
     }
 };
@@ -28,30 +42,39 @@ bridge.prototype.onRegistered = function() {
 /**
  * A place to update the interface to signal the start of a search
  */
-bridge.prototype.onSearchStarted = function(){
-
+bridge.prototype.onSearchStarted = function () {
 };
 
 /**
  * A place to update the interface to signal the end of a search
  */
-bridge.prototype.onSearchFinished = function(){
-
+bridge.prototype.onSearchFinished = function () {
 };
 
-bridge.prototype.startSearch = function(){
-    if (this.searchTimer){
+/**
+ * A place to update the interface to signal the failure of a search
+ */
+bridge.prototype.onSearchFailed = function () {
+    this.onSearchFinished.apply(this, arguments);
+};
+
+bridge.prototype.startAutoSubmitTimer = function () {
+    if (this.searchTimer) {
         clearTimeout(this.searchTimer);
     }
 
-    var self = this;
-
-    this.searchTimer = setTimeout( function(){
-        self.onSearchStarted();
-        self.raiseServerEvent("searched",function(){
-            self.onSearchFinished();
-        });
-    }, 300);
+    this.searchTimer = setTimeout(function () {
+        this.onSearchStarted();
+        this.raiseServerEvent(
+            "searched",
+            function () {
+                this.onSearchFinished.apply(this, arguments);
+            }.bind(this),
+            function () {
+                this.onSearchFailed.apply(this, arguments);
+            }.bind(this)
+        );
+    }.bind(this), 300);
 };
 
 bridge.prototype.onSubLeafValueChanged = function () {

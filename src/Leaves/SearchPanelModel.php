@@ -20,6 +20,11 @@ class SearchPanelModel extends LeafModel
     public $autoSubmit = false;
 
     /**
+     * @var string The name of the Search button leaf. Used by the ViewBridge to bind events to the button.
+     */
+    public $searchButtonLeafName = "Search";
+
+    /**
      * The binding source for controls in the panel
      *
      * @var string[]
@@ -35,7 +40,7 @@ class SearchPanelModel extends LeafModel
 
     /**
      * An array of control leaves.
-     * 
+     *
      * @var array
      */
     public $searchControls = [];
@@ -65,6 +70,7 @@ class SearchPanelModel extends LeafModel
     {
         $list = parent::getExposableModelProperties();
         $list[] = "autoSubmit";
+        $list[] = "searchButtonLeafName";
 
         return $list;
     }

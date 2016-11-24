@@ -52,7 +52,7 @@ class SearchPanelView extends View
 
         $this->registerSubLeaf(...$controls);
 
-        $searchButton = new Button("Search", "Search", function () {
+        $searchButton = new Button($this->model->searchButtonLeafName, "Search", function () {
             $this->model->searchedEvent->raise();
         }, true);
 
