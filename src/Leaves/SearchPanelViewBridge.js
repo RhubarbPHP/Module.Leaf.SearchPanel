@@ -79,7 +79,7 @@ bridge.prototype.startAutoSubmitTimer = function () {
 
 bridge.prototype.onSubLeafValueChanged = function () {
     if (this.model.autoSubmit) {
-        this.startSearch();
+        this.startAutoSubmitTimer();
     }
 };
 
