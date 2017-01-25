@@ -19,17 +19,22 @@
 namespace Rhubarb\Leaf\SearchPanel\Leaves;
 
 use Rhubarb\Crown\Events\Event;
+use Rhubarb\Crown\Request\WebRequest;
+use Rhubarb\Crown\String\StringTools;
+use Rhubarb\Leaf\Leaves\Controls\Control;
 use Rhubarb\Leaf\Leaves\Leaf;
 use Rhubarb\Leaf\Leaves\LeafModel;
+use Rhubarb\Leaf\Leaves\UrlStateLeaf;
 use Rhubarb\Stem\Filters\Group;
 
 /**
  * A search interface that raises search events on behalf of the contained search controls.
- *
- * @property bool $AutoSubmit True if searching should happen as you type.
  */
-class SearchPanel extends Leaf
+class SearchPanel extends UrlStateLeaf
 {
+    /** @var SearchPanelView */
+    protected $view;
+
     /**
      * @var Event
      */
@@ -121,7 +126,7 @@ class SearchPanel extends Leaf
             $controlName = $control->getName();
 
             if (isset($controlValues[$controlName])) {
-                $this->model->searchValues->$controlName = $controlValues[$controlName];
+                $this->model->searchValues[$controlName] = $controlValues[$controlName];
             }
         }
 
@@ -132,14 +137,14 @@ class SearchPanel extends Leaf
 
     protected function bindEvents(Leaf $leaf)
     {
-        if (property_exists($leaf, "getFilterEvent")){
-            $leaf->getFilterEvent->attachHandler(function(){
+        if (property_exists($leaf, "getFilterEvent")) {
+            $leaf->getFilterEvent->attachHandler(function () {
                 return $this->onGetFilter();
             });
         }
 
-        if (property_exists($leaf, "getSearchControlValuesEvent")){
-            $leaf->getSearchControlValuesEvent->attachHandler(function(){
+        if (property_exists($leaf, "getSearchControlValuesEvent")) {
+            $leaf->getSearchControlValuesEvent->attachHandler(function () {
                 return $this->getSearchControlValues();
             });
         }
@@ -152,7 +157,6 @@ class SearchPanel extends Leaf
      */
     public function populateFilterGroup(Group $filterGroup)
     {
-
     }
 
     protected function onGetFilter()
@@ -190,10 +194,30 @@ class SearchPanel extends Leaf
     {
         $model = new SearchPanelModel();
 
-        // Pass through of searchedEvent
         $model->searchControls = $this->createSearchControls();
+
+        $model->urlStateNames = $this->getUrlStateNames($model->searchControls);
+
+        // Pass through of searchedEvent
         $this->searchedEvent = $model->searchedEvent;
 
         return $model;
+    }
+
+    /**
+     * Return URL GET param names for the controls in this panel
+     *
+     * @param Control[] $searchControls
+     * @return \string[] An array with keys matching the control names and values defining the GET param names
+     */
+    protected function getUrlStateNames(array $searchControls)
+    {
+        $names = [];
+        foreach ($searchControls as $control) {
+            $name = $control->getName();
+            $names[$name] = StringTools::camelCaseToSeparated($name);
+        }
+
+        return $names;
     }
 }
