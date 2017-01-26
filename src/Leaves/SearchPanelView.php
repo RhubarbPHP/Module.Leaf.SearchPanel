@@ -80,6 +80,11 @@ class SearchPanelView extends UrlStateView
 
     public function parseUrlState(WebRequest $request)
     {
+	/**
+	* To ensure child leaves process their raw request values in the normal way we mutate the 
+	* post data to change our shortened keys to those that match the leaf path of the child
+	* leaf.
+	*/
         foreach ($this->model->urlStateNames as $controlName => $paramName) {
             if ($request->get($paramName) !== null) {
                 foreach ($this->model->searchControls as $control) {
