@@ -18,11 +18,11 @@
 
 namespace Rhubarb\Leaf\SearchPanel\Leaves;
 
+use Rhubarb\Crown\Request\WebRequest;
 use Rhubarb\Leaf\Controls\Common\Buttons\Button;
-use Rhubarb\Leaf\Leaves\LeafDeploymentPackage;
-use Rhubarb\Leaf\Views\View;
+use Rhubarb\Leaf\Leaves\UrlStateView;
 
-class SearchPanelView extends View
+class SearchPanelView extends UrlStateView
 {
     /**
      * @var SearchPanelModel
@@ -31,17 +31,14 @@ class SearchPanelView extends View
 
     protected function getViewBridgeName()
     {
-        return "SearchPanelViewBridge";
+        return 'SearchPanelViewBridge';
     }
 
     public function getDeploymentPackage()
     {
-        return new LeafDeploymentPackage(__DIR__."/SearchPanelViewBridge.js");
-    }
-
-    public function setSearchControlsColumnCount($columns = 6)
-    {
-        $this->searchControlsColumnCount = $columns;
+        $package = parent::getDeploymentPackage();
+        $package->resourcesToDeploy[] = __DIR__ . '/SearchPanelViewBridge.js';
+        return $package;
     }
 
     protected function createSubLeaves()
@@ -79,5 +76,27 @@ class SearchPanelView extends View
         print '<td>' . $this->leaves["Search"] . '</td>';
 
         print '</tr></table></div>';
+    }
+
+    public function parseUrlState(WebRequest $request)
+    {
+	/**
+	* To ensure child leaves process their raw request values in the normal way we mutate the 
+	* post data to change our shortened keys to those that match the leaf path of the child
+	* leaf.
+	*/
+        foreach ($this->model->urlStateNames as $controlName => $paramName) {
+            if ($request->get($paramName) !== null) {
+                foreach ($this->model->searchControls as $control) {
+                    if ($control->getName() == $controlName) {
+                        $path = $control->getPath();
+                        if (!isset($request->postData[$path])) {
+                            $request->postData[$path] = $request->get($paramName);
+                        }
+                        break;
+                    }
+                }
+            }
+        }
     }
 }

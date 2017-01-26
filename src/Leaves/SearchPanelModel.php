@@ -3,9 +3,10 @@
 namespace Rhubarb\Leaf\SearchPanel\Leaves;
 
 use Rhubarb\Crown\Events\Event;
-use Rhubarb\Leaf\Leaves\LeafModel;
+use Rhubarb\Leaf\Leaves\Controls\Control;
+use Rhubarb\Leaf\Leaves\UrlStateLeafModel;
 
-class SearchPanelModel extends LeafModel
+class SearchPanelModel extends UrlStateLeafModel
 {
     /**
      * @var Event
@@ -41,9 +42,23 @@ class SearchPanelModel extends LeafModel
     /**
      * An array of control leaves.
      *
-     * @var array
+     * @var Control[]
      */
     public $searchControls = [];
+
+    /**
+     * An array with keys matching search control names and values defining what URL GET param names they should have
+     *
+     * @var string[]
+     */
+    public $urlStateNames = [];
+
+    /**
+     * Data from URL GET params matching controls based on their names in $urlStateNames
+     *
+     * @var array
+     */
+    public $urlStateValues = [];
 
     public function __construct()
     {
@@ -54,7 +69,7 @@ class SearchPanelModel extends LeafModel
 
     public function getSearchValue($name, $defaultValue = false)
     {
-        if (isset($this->searchValues[$name])){
+        if (isset($this->searchValues[$name])) {
             return $this->searchValues[$name];
         }
 
@@ -62,24 +77,24 @@ class SearchPanelModel extends LeafModel
     }
 
     /**
-     * Return the list of properties that can be exposed publically
+     * Return the list of properties that can be exposed publicly
      *
      * @return array
      */
     protected function getExposableModelProperties()
     {
         $list = parent::getExposableModelProperties();
-        $list[] = "autoSubmit";
-        $list[] = "searchButtonLeafName";
+        $list[] = 'autoSubmit';
+        $list[] = 'searchButtonLeafName';
+        $list[] = 'urlStateNames';
 
         return $list;
     }
 
-
     public function getBoundValue($propertyName, $index = null)
     {
-        if ($index !== null ){
-            if (isset($this->searchValues[$propertyName][$index])){
+        if ($index !== null) {
+            if (isset($this->searchValues[$propertyName][$index])) {
                 return $this->searchValues[$propertyName][$index];
             } else {
                 return null;
@@ -91,8 +106,8 @@ class SearchPanelModel extends LeafModel
 
     public function setBoundValue($propertyName, $propertyValue, $index = null)
     {
-        if ($index !== null){
-            if (!isset($this->searchValues[$propertyName]) || !is_array($this->searchValues[$propertyName])){
+        if ($index !== null) {
+            if (!isset($this->searchValues[$propertyName]) || !is_array($this->searchValues[$propertyName])) {
                 $this->searchValues[$propertyName] = [];
             }
 

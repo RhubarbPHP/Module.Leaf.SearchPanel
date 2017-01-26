@@ -1,10 +1,10 @@
 var bridge = function (leafPath) {
-    window.rhubarb.viewBridgeClasses.ViewBridge.apply(this, arguments);
+    window.rhubarb.viewBridgeClasses.UrlStateViewBridge.apply(this, arguments);
 
     this.searchTimer = null;
 };
 
-bridge.prototype = new window.rhubarb.viewBridgeClasses.ViewBridge();
+bridge.prototype = new window.rhubarb.viewBridgeClasses.UrlStateViewBridge();
 bridge.prototype.constructor = bridge;
 
 bridge.prototype.onRegistered = function () {
@@ -43,6 +43,24 @@ bridge.prototype.onRegistered = function () {
  * A place to update the interface to signal the start of a search
  */
 bridge.prototype.onSearchStarted = function () {
+    var hasState = false;
+    var state = {};
+
+    for (var controlName in this.model.urlStateNames) {
+        if (!this.model.urlStateNames.hasOwnProperty(controlName)) {
+            continue;
+        }
+
+        var control = this.findChildViewBridge(controlName);
+        if (control) {
+            hasState = true;
+            state[this.model.urlStateNames[controlName]] = control.getValue();
+        }
+    }
+
+    if (hasState) {
+        this.updateUrlState(state);
+    }
 };
 
 /**
