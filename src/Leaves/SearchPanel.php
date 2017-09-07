@@ -113,13 +113,25 @@ class SearchPanel extends UrlStateLeaf
         return $controlData;
     }
 
+    private $previousSearchValues;
+
     /**
      * Sets the values of the search controls.
      *
      * @param array $controlValues A key value pair array.
      */
-    public function setSearchControlValues($controlValues = [])
+    public function setSearchControlValues($controlValues = [], $rememberPrevious = false)
     {
+        if ($rememberPrevious){
+            $this->previousSearchValues = $this->model->searchValues;
+        } else {
+            if ($this->previousSearchValues)   {
+                $this->model->searchValues = $this->previousSearchValues;
+                $this->previousSearchValues = null;
+                return;
+            }
+        }
+
         $controlValues = array_merge($this->defaultControlValues, $controlValues);
 
         foreach ($this->model->searchControls as $control) {
