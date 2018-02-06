@@ -2,6 +2,10 @@ var bridge = function (leafPath) {
     window.rhubarb.viewBridgeClasses.UrlStateViewBridge.apply(this, arguments);
 
     this.searchTimer = null;
+
+    // This flag controls the interaction between keyUp events and onChange events
+    // to prevent double firing of search.
+    this.submitOnChange = true;
 };
 
 bridge.prototype = new window.rhubarb.viewBridgeClasses.UrlStateViewBridge();
@@ -16,7 +20,10 @@ bridge.prototype.onRegistered = function () {
         for (var i in subPresenters) {
             if (subPresenters.hasOwnProperty(i)) {
                 // If the sub presenter is emitting key press events we need to know.
-                subPresenters[i].onKeyPress = function () {
+                subPresenters[i].onKeyUp = function () {
+                    // Clearly the input supports key up as it's being used - disabled on change event
+                    // which will 'double fire'
+                    this.submitOnChange = false;
                     this.startAutoSubmitTimer();
                 }.bind(this);
             }
@@ -96,7 +103,7 @@ bridge.prototype.startAutoSubmitTimer = function () {
 };
 
 bridge.prototype.onSubLeafValueChanged = function () {
-    if (this.model.autoSubmit) {
+    if (this.model.autoSubmit && this.submitOnChange) {
         this.startAutoSubmitTimer();
     }
 };

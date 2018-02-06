@@ -1,5 +1,9 @@
 # Changelog
 
+### 1.1.2
+
+Fixed:    Issue with interplay of onKeyUp and onChange regarding autoSubmit
+
 ### 1.1.1
 
 Fixed:	  Issue with counts on tabs
