@@ -78,6 +78,100 @@ SearchPanels include a pattern for filtering Stem Collections. To use the Search
 with other application components you will need to override the `populateFilterGroup()` function.
 
 
-```php
+This is passed an empty Group filter which you should populate by calling `addFilter()`:
 
+```php
+class JobsSearchPanel extends SearchPanel
+{
+    protected function createSearchControls()
+    {
+        $status = new DropDown("Status");
+        $status->setSelectionItems([
+            ["", "Any Status"],
+            ["Incoming"],
+            ["Outgoing"],
+            ["Stale"]
+        ]);
+
+        return [
+            $status,
+            new Checkbox("OnlySentItems")
+        ];
+    }
+    
+    public function populateFilterGroup(Group $group)
+    {
+        $values = $this->getSearchControlValues();
+        
+        if ($values["Status"] != ""){
+            $group->addFilter(new Equals("Status", $values["Status"]));
+        }
+        
+        if ($values["OnlySentItems"]){
+            $group->addFilter(new Equals("Sent", true));
+        }
+    }
+}
 ```
+
+This is the most common way for using a Search Panel
+
+## Customising the view
+
+Many customisations are achievable by simplying configuring the controls:
+
+```php
+class JobsSearchPanel extends SearchPanel
+{
+    protected function createSearchControls()
+    {
+        $status = new DropDown("Status");
+        $status->setSelectionItems([
+            ["", "Any Status"],
+            ["Incoming"],
+            ["Outgoing"],
+            ["Stale"]
+        ]);
+        
+        $sent = new Checkbox("OnlySentItems");
+        
+        $status->addCssClassNames('extra-padding');
+        $sent->setLabel("Show sent items only");
+
+        return [
+            $status,
+            $sent
+        ];
+    }
+}
+```
+
+For more control simply create your own extended `SearchPanelView` and register it with the
+DI container or set your individual `SearchPanel` to use it.
+
+## Auto submit/As-you-type searching
+
+A common feature is making the search panel submit a search as the changes the search criteria
+without requiring them to click "Search". This also enables "as-you-type" searching in text
+controls.
+
+To enable this simply set the $autoSubmit value in the model to true:
+
+```php
+class JobsSearchPanel extends SearchPanel
+{
+    protected function onModelCreated()
+    {
+        $this->model->autoSubmit = true;
+        
+        parent::onModelCreated();
+    }
+}
+```
+
+When a search control value is changed a timer is started after which the search is preformed.
+The timer is a very short interval but if other changes are made the timer is restarted to avoid
+'flicker' in a result set.
+
+You should make every effort to ensure there is good visual feedback of when the panel is and is
+not searching.
