@@ -1,5 +1,9 @@
 # Changelog
 
+### 1.1.3
+
+Fixed:    Issue with enter keypress being hijacked by other buttons.
+
 ### 1.1.2
 
 Fixed:    Issue with interplay of onKeyUp and onChange regarding autoSubmit

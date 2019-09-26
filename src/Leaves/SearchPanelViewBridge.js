@@ -31,6 +31,14 @@ bridge.prototype.onRegistered = function () {
     }
 
     if (this.model.searchButtonLeafName) {
+
+        this.viewNode.addEventListener('keypress',function(event) {
+            if(event.keyCode == 13) {
+                event.preventDefault();
+                this.findChildViewBridge(this.model.searchButtonLeafName).viewNode.click();
+            }
+        }.bind(this));
+
         var button = this.findChildViewBridge(this.model.searchButtonLeafName);
         if (button) {
             button.attachClientEventHandler('OnButtonPressed', function () {
